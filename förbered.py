@@ -33,6 +33,8 @@ XXL (16-18)	36-38''	 44-46''
 '''
 
 
+# läs in tabeller, plocka ut och byt namn på relevanta kolumner
+
 män = pd.read_csv("male.csv")
 kvinnor = pd.read_csv("female.csv")
 
@@ -43,17 +45,22 @@ män.rename(columns = {"stature":"längd", "weightkg":"vikt", "chestcircumferenc
 kvinnor.rename(columns = {"stature":"längd", "weightkg":"vikt", "chestcircumference":"byst", "waistcircumference":"midja"}, inplace=True)
 
 
+# gör om längd och vikt till cm och kg
+
 män.längd = män.längd.transform(func=lambda l:l/10)
 män.vikt = män.vikt.transform(func=lambda v:v/10)
 kvinnor.längd = kvinnor.längd.transform(func=lambda l:l/10)
 kvinnor.vikt = kvinnor.vikt.transform(func=lambda v:v/10)
 
 
+# använd storleksguiden för att sätta en referensstorlek på personerna i tabellerna
+
 storlekar = ["XXS", "XS", "S", "M", "L", "XL", "XXL", "3XL"]
 
 def storlek_man(data):
+  # hitta rätt index in i storlekar[] från det givna måttet
   ms = 0
-  m = data["midja"]/25.4
+  m = data["midja"]/25.4    # från mm till tum
   if m > 27:  ms += 1
   if m > 29:  ms += 1
   if m > 31:  ms += 1
@@ -71,6 +78,8 @@ def storlek_man(data):
   if b > 41:    bs += 1
   if b > 45:    bs += 1
   if b > 48:    bs += 1
+
+  # om bröst och midja faller på olika storlekar väljer män den större storleken
 
   return storlekar[max(bs, ms)]
 
@@ -94,11 +103,17 @@ def storlek_kvinna(data):
   if b > 39:  bs += 1
   if b > 43:  bs += 1
 
+  # kvinnor väljer den mindre storleken
+
   return storlekar[min(bs, ms)]
 
 
+# lägg till storlekskolumnen i tabellerna m.h.a. storleksfunktionerna
+
 män["storlek"] = män.apply(func=storlek_man, axis="columns")
 kvinnor["storlek"] = kvinnor.apply(func=storlek_kvinna, axis="columns")
+
+# spara endast ut längd, vikt och storlek i de nya tabellerna
 
 del män["bröst"]
 del män["midja"]
