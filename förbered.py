@@ -113,12 +113,9 @@ def storlek_kvinna(data):
 män["storlek"] = män.apply(func=storlek_man, axis="columns")
 kvinnor["storlek"] = kvinnor.apply(func=storlek_kvinna, axis="columns")
 
-# spara endast ut längd, vikt och storlek i de nya tabellerna
+# justera tabellen till formatet "längd, vikt, storlek" och spara som ny csv
 
-del män["bröst"]
-del män["midja"]
-del kvinnor["byst"]
-del kvinnor["midja"]
-
+män = män[["längd", "vikt", "storlek"]]
 män.to_csv("män.csv", index=False)
+kvinnor = kvinnor[["längd", "vikt", "storlek"]]
 kvinnor.to_csv("kvinnor.csv", index=False)
